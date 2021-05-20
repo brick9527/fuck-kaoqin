@@ -1,0 +1,13 @@
+{
+    "apps": [
+      {
+        "name": "fvck kaoqin",
+        "script": "./src/index.js",
+        "watch": true,
+        "error_file": "~/fvck-kaoqin.log",
+        "out_file": "~/fvck-kaoqin.log",
+        "log_date_format": "YYYY-MM-DD HH:mm:ss.SSS"
+      }
+    ]
+  }
+  
