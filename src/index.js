@@ -1,15 +1,15 @@
-const { SMTPClient } = require("emailjs");
-const { CronJob } = require("cron");
-const http = require("http");
+const { SMTPClient } = require('emailjs');
+const { CronJob } = require('cron');
+const http = require('http');
 
 const ServerConfig = {
-  backHost: "",
+  backHost: '',
   backPort: 14332,
-  host: "smtp.exmail.qq.com",
+  host: 'smtp.exmail.qq.com',
   port: 465,
-  user: "",
-  password: "",
-  notices: [""],
+  user: '',
+  password: '',
+  notices: [''],
 };
 
 const client = new SMTPClient({
@@ -24,7 +24,7 @@ const client = new SMTPClient({
 
 let noticeFlags = [];
 
-function createFlags() {
+function createFlags () {
   noticeFlags = [];
   ServerConfig.notices.forEach((notice) => {
     const flag = Math.floor(100000 * Math.random());
@@ -38,11 +38,11 @@ function createFlags() {
 
 // 刷新标识 "0 0 5 * * *"
 createFlags();
-new CronJob("0 0 17 * * *", createFlags).start();
+new CronJob('0 0 17 * * *', createFlags).start();
 
 // 提醒 "0 */10 18-22 * * *"
-new CronJob("0 */10 18-22 * * *", () => {
-  for (let noticeFlag of noticeFlags) {
+new CronJob('0 */10 18-22 * * *', () => {
+  for (const noticeFlag of noticeFlags) {
     const { notice, flag } = noticeFlag;
     const text = `FVCK打卡：http://${ServerConfig.backHost}:${ServerConfig.backPort}?${flag}`;
     client.send(
@@ -50,7 +50,7 @@ new CronJob("0 */10 18-22 * * *", () => {
         text: text,
         from: `FVCK打卡 <${ServerConfig.user}>`,
         to: notice,
-        subject: `【FVCK打卡】`,
+        subject: '【FVCK打卡】',
       },
       async (error, info) => {
         if (error) {
@@ -65,17 +65,17 @@ new CronJob("0 */10 18-22 * * *", () => {
 
 http
   .createServer(function (req, res) {
-    const url = req.url || "";
-    const query = url.split("?")[1];
+    const url = req.url || '';
+    const query = url.split('?')[1];
     const index = noticeFlags.findIndex(
       (noticeFlag) => noticeFlag.flag.toString() === query
     );
     console.log(`收到请求 ${url}`);
     if (index !== -1) {
       noticeFlags.splice(index, 1);
-      res.end("success fvck!");
+      res.end('success fvck!');
     } else {
-      res.end("fvck but not full fvck!");
+      res.end('fvck but not full fvck!');
     }
   })
   .listen(ServerConfig.backPort);
